@@ -1,0 +1,128 @@
+<div class="page">
+  <header class="hero">
+    <p class="eyebrow">AI CV Match</p>
+    <h1>Compare your CV to a job description</h1>
+    <p class="subtitle">
+      Upload a PDF resume, paste the role details, and get a structured match report.
+    </p>
+  </header>
+
+  <div class="layout">
+    <section class="card form-card" aria-labelledby="match-form-heading">
+      <h2 id="match-form-heading">Your inputs</h2>
+
+      <form (ngSubmit)="submit()" class="form" novalidate>
+        <div class="field">
+          <label for="cvPdf">CV (PDF)</label>
+          <input
+            id="cvPdf"
+            type="file"
+            accept="application/pdf,.pdf"
+            (change)="onFileSelected($event)"
+            [disabled]="loading"
+          />
+          <p class="hint" *ngIf="selectedFile; else noFile">
+            Selected: <strong>{{ selectedFile.name }}</strong>
+          </p>
+          <ng-template #noFile>
+            <p class="hint">Max 10 MB. Text-based PDFs work best.</p>
+          </ng-template>
+        </div>
+
+        <div class="field">
+          <label for="jobDescription">Job description</label>
+          <textarea
+            id="jobDescription"
+            name="jobDescription"
+            rows="10"
+            placeholder="Paste the full job description here..."
+            [(ngModel)]="jobDescription"
+            [disabled]="loading"
+            required
+          ></textarea>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn primary" [disabled]="loading">
+            {{ loading ? 'Analyzing…' : 'Analyze match' }}
+          </button>
+          <button
+            type="button"
+            class="btn secondary"
+            (click)="reset()"
+            [disabled]="loading"
+          >
+            Clear
+          </button>
+        </div>
+      </form>
+
+      <p class="error" *ngIf="errorMessage" role="alert">{{ errorMessage }}</p>
+    </section>
+
+    <section
+      class="card results-card"
+      aria-labelledby="results-heading"
+      [class.results-card--empty]="!result && !loading"
+    >
+      <h2 id="results-heading">Results</h2>
+
+      <div *ngIf="loading" class="loading" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Analyzing your CV against the job description…</p>
+      </div>
+
+      <div *ngIf="!loading && !result" class="placeholder">
+        <p>Submit the form to see your match score, skills, gaps, and recommendations.</p>
+      </div>
+
+      <div *ngIf="result as r" class="results">
+        <div class="score-panel">
+          <div
+            class="score-ring"
+            [style.--score]="r.matchScore"
+            aria-hidden="true"
+          >
+            <span class="score-value">{{ r.matchScore }}</span>
+          </div>
+          <div class="score-meta">
+            <p class="score-label">{{ scoreLabel(r.matchScore) }}</p>
+            <p class="score-caption">Overall match score (0–100)</p>
+          </div>
+        </div>
+
+        <div class="result-grid">
+          <article class="result-block">
+            <h3>Matched skills</h3>
+            <ul *ngIf="r.matchedSkills.length; else emptyMatched">
+              <li *ngFor="let skill of r.matchedSkills">{{ skill }}</li>
+            </ul>
+            <ng-template #emptyMatched>
+              <p class="empty">No matched skills identified.</p>
+            </ng-template>
+          </article>
+
+          <article class="result-block">
+            <h3>Skill gaps</h3>
+            <ul *ngIf="r.skillGaps.length; else emptyGaps">
+              <li *ngFor="let gap of r.skillGaps">{{ gap }}</li>
+            </ul>
+            <ng-template #emptyGaps>
+              <p class="empty">No skill gaps identified.</p>
+            </ng-template>
+          </article>
+
+          <article class="result-block result-block--wide">
+            <h3>Recommendations</h3>
+            <ul *ngIf="r.recommendations.length; else emptyRecs">
+              <li *ngFor="let item of r.recommendations">{{ item }}</li>
+            </ul>
+            <ng-template #emptyRecs>
+              <p class="empty">No recommendations provided.</p>
+            </ng-template>
+          </article>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+@AiCvMatch.Api_HostAddress = http://localhost:5196
+
+### Analyze CV against job description (replace path with your PDF)
+POST {{AiCvMatch.Api_HostAddress}}/api/cv-match
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="jobDescription"
+
+We are hiring a .NET developer with experience in ASP.NET Core, REST APIs, Entity Framework, and cloud deployment (Azure). Strong communication skills required.
+--boundary
+Content-Disposition: form-data; name="cvPdf"; filename="resume.pdf"
+Content-Type: application/pdf
+
+< ./resume.pdf
+--boundary--
