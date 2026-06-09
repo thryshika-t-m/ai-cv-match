@@ -144,6 +144,21 @@ client/ai-cv-match-ui/
   src/app/components/cv-match/
 ```
 
+## Tests
+
+**Backend (31 unit tests)**
+
+```bash
+dotnet test
+```
+
+**Frontend (13 unit tests)**
+
+```bash
+cd client/ai-cv-match-ui
+npm test -- --watch=false --browsers=ChromeHeadless
+```
+
 ## Notes
 
 - PDFs must contain extractable text (scanned image-only PDFs are not supported without OCR).
